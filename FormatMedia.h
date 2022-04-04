@@ -7,8 +7,8 @@
 #include <Windows.h>
 #include <windowsx.h>
 #include <stdio.h>
-#include<Commdlg.h> // �򿪱����ļ��Ի���
-#include<Shlobj.h> // ѡ���ļ��жԻ���
+#include<Commdlg.h> // 打开保存文件对话框
+#include<Shlobj.h> // 选择文件夹对话框
 #include <stdlib.h>
 #include <shlwapi.h>
 
@@ -21,17 +21,17 @@
 #endif
 
 #ifdef _DEBUG
-HANDLE g_hOutput = 0;	// ���ڴ洢��׼������
+HANDLE g_hOutput = 0;	// 用于存储标准输出句柄
 char pszText[1024] = { 0 };
-#endif // ����
+#endif // 调试
 
-struct // ������Ļ ������ �� ���ߡ�
+struct // 储存屏幕 “宽” 和 “高”
 {
 	int ScreenW;
 	int ScreenH;
 } DeviceInfo = { 0 };
 
-TCHAR workDir[MAX_PATH] = { 0 };// �洢����ǰ����Ŀ¼��ĩβ��'\'��
+TCHAR workDir[MAX_PATH] = { 0 };// 存储程序当前工作目录（末尾带'\'）
 
 #define ID_BUTTON_OPENFILE 0x0520
 #define ID_BUTTON_SAVEFILE 0x0521
@@ -56,7 +56,7 @@ HWND audFormat_Combobox = NULL;
 HWND resultOutput_Edit = NULL;
 HWND startButton = NULL;
 
-// ͼƬ֧�ָ�ʽ
+// 图片支持格式
 UINT picFormatC = 10;
 TCHAR* picFormat[] = 
 { 
@@ -72,8 +72,8 @@ TCHAR* picFormat[] =
 	__TEXT(".ppm")
 };
 
-// ��Ƶ֧�ָ�ʽ
-UINT vidFormatC = 9;
+// 视频支持格式
+UINT vidFormatC = 10;
 TCHAR* vidFormat[] =
 {
 	__TEXT(".mp4"),
@@ -84,10 +84,11 @@ TCHAR* vidFormat[] =
 	__TEXT(".m4v"),
 	__TEXT(".f4v"),
 	__TEXT(".ts"),
-	__TEXT(".webm")
+	__TEXT(".webm"),
+	__TEXT(".mkv")
 };
 
-// ��Ƶ֧�ָ�ʽ
+// 音频支持格式
 UINT audFormatC = 7;
 TCHAR* audFormat[] =
 {
@@ -101,21 +102,21 @@ TCHAR* audFormat[] =
 };
 
 struct
-{// ����C:\A\B.C
-	TCHAR filePath[MAX_PATH];// �ļ�ԭ����·�� [ C:\A\B.C ]
-	TCHAR fileDrive[MAX_PATH];// �ļ����������� [ C: ]
-	TCHAR fileDir[MAX_PATH];// �ļ�����Ŀ¼�������������� [ \A\ ]
-	TCHAR fileEnv[MAX_PATH];// �ļ�����Ŀ¼������������ [ C:\A\ ]
-	TCHAR fileName[MAX_PATH];// �ļ������޺�׺�� [ B ]
-	TCHAR fileExt[MAX_PATH];// �ļ���׺����'.'�� [ .C ]
+{// 例：C:\A\B.C
+	TCHAR filePath[MAX_PATH];// 文件原完整路径 [ C:\A\B.C ]
+	TCHAR fileDrive[MAX_PATH];// 文件所在驱动器 [ C: ]
+	TCHAR fileDir[MAX_PATH];// 文件所在目录（不带驱动器） [ \A\ ]
+	TCHAR fileEnv[MAX_PATH];// 文件所在目录（带驱动器） [ C:\A\ ]
+	TCHAR fileName[MAX_PATH];// 文件名（无后缀） [ B ]
+	TCHAR fileExt[MAX_PATH];// 文件后缀（带'.'） [ .C ]
 } filePathInfo = { 0 };
 
-DWORD fileType = -1;// ����ȷ��Ŀ���ļ�����
+DWORD fileType = -1;// 用于确定目标文件类型
 
 
 LRESULT CALLBACK mainMsgProc(HWND hWnd, UINT msgID, WPARAM wParam, LPARAM lParam);
 
-BOOL preHandle();	//	Ԥ��������
+BOOL preHandle();	//	预处理函数
 
 int createComponent(HWND hWnd, HINSTANCE hIns);
 
